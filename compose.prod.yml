@@ -1,0 +1,28 @@
+services:
+
+  app-db:
+    image: postgres:17.4
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=master
+    volumes:
+      - app-db:/var/lib/postgresql/data
+
+  app:
+    image: app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    environment:
+      - PORT=8080
+      - DATABASE_URL=postgresql://postgres:postgres@app-db:5432/master?schema=public
+      - JWT_SECRET=eksldjwkwkafjlas1+
+    depends_on:
+      - app-db
+    ports:
+      - 8080:8080
+
+volumes:
+  app-db:
